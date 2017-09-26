@@ -1,8 +1,8 @@
 var React = require('react');
 var BookmarkItem = require('./BookmarkItem');
 
-var BookmarkList = React.createClass({
-  render: function() {
+class BookmarkList extends React.Component {
+  render() {
     var bookmarks = this.props.bookmarks;
     var onDelete = this.props.onDelete;
 
@@ -22,6 +22,6 @@ var BookmarkList = React.createClass({
       })
     );
   }
-});
+}
 
 module.exports = BookmarkList;

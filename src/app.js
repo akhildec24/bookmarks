@@ -1,6 +1,5 @@
-// Timeline note: this version uses React patterns common around late 2016.
-// React.createClass, getInitialState, props callbacks, Webpack 1, Babel 6.
-// Do not use hooks, TypeScript, Vite, Tailwind, or modern React APIs.
+// Timeline note: upgraded to React 16 and ES6 class components, September 2017.
+// No hooks. No TypeScript. No Vite. No Tailwind. No modern React APIs.
 
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -8,6 +7,7 @@ var BookmarkForm = require('./components/BookmarkForm');
 var BookmarkList = require('./components/BookmarkList');
 var CategoryFilter = require('./components/CategoryFilter');
 var SearchBox = require('./components/SearchBox');
+var ErrorBoundary = require('./components/ErrorBoundary');
 
 require('./styles/app.css');
 
@@ -48,8 +48,9 @@ var sampleBookmarks = [
   }
 ];
 
-var App = React.createClass({
-  getInitialState: function() {
+class App extends React.Component {
+  constructor(props) {
+    super(props);
     var stored = localStorage.getItem(STORAGE_KEY);
     var bookmarks;
     if (stored) {
@@ -58,18 +59,22 @@ var App = React.createClass({
       bookmarks = sampleBookmarks;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleBookmarks));
     }
-    return {
+    this.state = {
       bookmarks: bookmarks,
       searchTerm: '',
       selectedCategory: 'All'
     };
-  },
+    this.handleAddBookmark = this.handleAddBookmark.bind(this);
+    this.handleDeleteBookmark = this.handleDeleteBookmark.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
+    this.handleCategoryChange = this.handleCategoryChange.bind(this);
+  }
 
-  saveToStorage: function(bookmarks) {
+  saveToStorage(bookmarks) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
-  },
+  }
 
-  handleAddBookmark: function(bookmark) {
+  handleAddBookmark(bookmark) {
     var newBookmark = {
       id: Date.now(),
       title: bookmark.title,
@@ -81,25 +86,25 @@ var App = React.createClass({
     var updated = [newBookmark].concat(this.state.bookmarks);
     this.setState({ bookmarks: updated });
     this.saveToStorage(updated);
-  },
+  }
 
-  handleDeleteBookmark: function(id) {
+  handleDeleteBookmark(id) {
     var updated = this.state.bookmarks.filter(function(b) {
       return b.id !== id;
     });
     this.setState({ bookmarks: updated });
     this.saveToStorage(updated);
-  },
+  }
 
-  handleSearchChange: function(term) {
+  handleSearchChange(term) {
     this.setState({ searchTerm: term });
-  },
+  }
 
-  handleCategoryChange: function(category) {
+  handleCategoryChange(category) {
     this.setState({ selectedCategory: category });
-  },
+  }
 
-  getCategories: function() {
+  getCategories() {
     var cats = {};
     this.state.bookmarks.forEach(function(b) {
       if (b.category) {
@@ -107,9 +112,9 @@ var App = React.createClass({
       }
     });
     return Object.keys(cats).sort();
-  },
+  }
 
-  getFilteredBookmarks: function() {
+  getFilteredBookmarks() {
     var bookmarks = this.state.bookmarks;
     var searchTerm = this.state.searchTerm.toLowerCase();
     var selectedCategory = this.state.selectedCategory;
@@ -132,44 +137,46 @@ var App = React.createClass({
     }
 
     return bookmarks;
-  },
+  }
 
-  render: function() {
+  render() {
     var categories = this.getCategories();
     var filtered = this.getFilteredBookmarks();
 
-    return React.createElement('div', { className: 'app' },
-      React.createElement('header', { className: 'app-header' },
-        React.createElement('h1', null, 'Bookmark Box')
-      ),
-      React.createElement('div', { className: 'app-body' },
-        React.createElement('div', { className: 'sidebar' },
-          React.createElement(BookmarkForm, {
-            onAdd: this.handleAddBookmark,
-            categories: categories
-          })
+    return React.createElement(ErrorBoundary, null,
+      React.createElement('div', { className: 'app' },
+        React.createElement('header', { className: 'app-header' },
+          React.createElement('h1', null, 'Bookmark Box')
         ),
-        React.createElement('div', { className: 'main-content' },
-          React.createElement('div', { className: 'toolbar' },
-            React.createElement(SearchBox, {
-              value: this.state.searchTerm,
-              onChange: this.handleSearchChange
-            }),
-            React.createElement(CategoryFilter, {
-              categories: categories,
-              selected: this.state.selectedCategory,
-              onChange: this.handleCategoryChange
+        React.createElement('div', { className: 'app-body' },
+          React.createElement('div', { className: 'sidebar' },
+            React.createElement(BookmarkForm, {
+              onAdd: this.handleAddBookmark,
+              categories: categories
             })
           ),
-          React.createElement(BookmarkList, {
-            bookmarks: filtered,
-            onDelete: this.handleDeleteBookmark
-          })
+          React.createElement('div', { className: 'main-content' },
+            React.createElement('div', { className: 'toolbar' },
+              React.createElement(SearchBox, {
+                value: this.state.searchTerm,
+                onChange: this.handleSearchChange
+              }),
+              React.createElement(CategoryFilter, {
+                categories: categories,
+                selected: this.state.selectedCategory,
+                onChange: this.handleCategoryChange
+              })
+            ),
+            React.createElement(BookmarkList, {
+              bookmarks: filtered,
+              onDelete: this.handleDeleteBookmark
+            })
+          )
         )
       )
     );
   }
-});
+}
 
 ReactDOM.render(
   React.createElement(App),

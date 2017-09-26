@@ -1,22 +1,24 @@
 var React = require('react');
 
-var BookmarkForm = React.createClass({
-  getInitialState: function() {
-    return {
+class BookmarkForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
       title: '',
       url: '',
       category: '',
       note: ''
     };
-  },
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
 
-  handleChange: function(field, e) {
+  handleChange(field, e) {
     var update = {};
     update[field] = e.target.value;
     this.setState(update);
-  },
+  }
 
-  handleSubmit: function(e) {
+  handleSubmit(e) {
     e.preventDefault();
     var title = this.state.title.trim();
     var url = this.state.url.trim();
@@ -39,9 +41,9 @@ var BookmarkForm = React.createClass({
       category: '',
       note: ''
     });
-  },
+  }
 
-  render: function() {
+  render() {
     return React.createElement('form', {
       className: 'bookmark-form',
       onSubmit: this.handleSubmit
@@ -94,6 +96,6 @@ var BookmarkForm = React.createClass({
       )
     );
   }
-});
+}
 
 module.exports = BookmarkForm;

@@ -1,11 +1,16 @@
 var React = require('react');
 
-var BookmarkItem = React.createClass({
-  handleDelete: function() {
-    this.props.onDelete(this.props.bookmark.id);
-  },
+class BookmarkItem extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleDelete = this.handleDelete.bind(this);
+  }
 
-  render: function() {
+  handleDelete() {
+    this.props.onDelete(this.props.bookmark.id);
+  }
+
+  render() {
     var bookmark = this.props.bookmark;
 
     return React.createElement('div', { className: 'bookmark-item' },
@@ -31,6 +36,6 @@ var BookmarkItem = React.createClass({
       )
     );
   }
-});
+}
 
 module.exports = BookmarkItem;

@@ -1,11 +1,16 @@
 var React = require('react');
 
-var SearchBox = React.createClass({
-  handleChange: function(e) {
-    this.props.onChange(e.target.value);
-  },
+class SearchBox extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
 
-  render: function() {
+  handleChange(e) {
+    this.props.onChange(e.target.value);
+  }
+
+  render() {
     return React.createElement('div', { className: 'search-box' },
       React.createElement('input', {
         type: 'text',
@@ -15,6 +20,6 @@ var SearchBox = React.createClass({
       })
     );
   }
-});
+}
 
 module.exports = SearchBox;

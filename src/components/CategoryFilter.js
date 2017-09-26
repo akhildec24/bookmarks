@@ -1,11 +1,16 @@
 var React = require('react');
 
-var CategoryFilter = React.createClass({
-  handleChange: function(e) {
-    this.props.onChange(e.target.value);
-  },
+class CategoryFilter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
 
-  render: function() {
+  handleChange(e) {
+    this.props.onChange(e.target.value);
+  }
+
+  render() {
     var categories = this.props.categories;
     var selected = this.props.selected;
 
@@ -24,6 +29,6 @@ var CategoryFilter = React.createClass({
       }, options)
     );
   }
-});
+}
 
 module.exports = CategoryFilter;
