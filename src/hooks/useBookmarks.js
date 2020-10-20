@@ -106,6 +106,17 @@ function useBookmarks() {
     return sorted;
   }
 
+  function importBookmarks(imported) {
+    setBookmarks(function(prev) {
+      var existingUrls = {};
+      prev.forEach(function(b) { existingUrls[b.url] = true; });
+      var newOnes = imported.filter(function(b) {
+        return b.url && !existingUrls[b.url];
+      });
+      return newOnes.concat(prev);
+    });
+  }
+
   return {
     bookmarks: bookmarks,
     sortOrder: sortOrder,
@@ -113,7 +124,8 @@ function useBookmarks() {
     getSorted: getSorted,
     addBookmark: addBookmark,
     deleteBookmark: deleteBookmark,
-    editBookmark: editBookmark
+    editBookmark: editBookmark,
+    importBookmarks: importBookmarks
   };
 }
 

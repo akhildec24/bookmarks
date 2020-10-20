@@ -1,8 +1,9 @@
-// Timeline note: refactored to function components and hooks, February 2019.
-// No TypeScript. No Vite. No Tailwind. No modern React APIs beyond hooks.
+// Timeline note: upgraded to React 17 and Webpack 5, October 2020.
+// New JSX transform enabled. Added import/export JSON feature.
 
 var React = require('react');
 var useState = React.useState;
+var useRef = React.useRef;
 var ReactDOM = require('react-dom');
 var useBookmarks = require('./hooks/useBookmarks');
 var BookmarkForm = require('./components/BookmarkForm');
@@ -22,6 +23,7 @@ function App() {
   var _category = useState('All');
   var selectedCategory = _category[0];
   var setSelectedCategory = _category[1];
+  var fileInputRef = useRef(null);
 
   function getCategories() {
     var cats = {};
@@ -57,13 +59,59 @@ function App() {
     return bm.getSorted(bookmarks);
   }
 
+  function handleExport() {
+    var json = JSON.stringify(bm.bookmarks, null, 2);
+    var blob = new Blob([json], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'bookmarks.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function handleImport() {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }
+
+  function handleFileChange(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        var imported = JSON.parse(ev.target.result);
+        if (Array.isArray(imported)) {
+          bm.importBookmarks(imported);
+        }
+      } catch (err) {
+        console.error('Failed to import bookmarks:', err);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }
+
   var categories = getCategories();
   var filtered = getFilteredBookmarks();
 
   return React.createElement(ErrorBoundary, null,
     React.createElement('div', { className: 'app' },
       React.createElement('header', { className: 'app-header' },
-        React.createElement('h1', null, 'Bookmark Box')
+        React.createElement('h1', null, 'Bookmark Box'),
+        React.createElement('div', { className: 'header-actions' },
+          React.createElement('button', { className: 'btn-export', onClick: handleExport }, 'Export'),
+          React.createElement('button', { className: 'btn-import', onClick: handleImport }, 'Import'),
+          React.createElement('input', {
+            type: 'file',
+            ref: fileInputRef,
+            style: { display: 'none' },
+            accept: '.json',
+            onChange: handleFileChange
+          })
+        )
       ),
       React.createElement('div', { className: 'app-body' },
         React.createElement('div', { className: 'sidebar' },

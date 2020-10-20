@@ -1,27 +1,27 @@
 {
   "name": "bookmark-box",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "A simple local bookmarks manager",
   "main": "src/app.js",
   "scripts": {
-    "start": "NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server --open",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider webpack serve --mode development --open",
     "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --mode production"
   },
   "dependencies": {
-    "prop-types": "15.6.2",
-    "react": "16.8.0",
-    "react-dom": "16.8.0"
+    "prop-types": "15.7.2",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@babel/core": "7.0.0",
-    "@babel/preset-env": "7.0.0",
-    "@babel/preset-react": "7.0.0",
-    "babel-loader": "8.0.2",
-    "css-loader": "1.0.0",
-    "html-webpack-plugin": "3.2.0",
-    "style-loader": "0.23.0",
-    "webpack": "4.17.2",
-    "webpack-cli": "3.1.0",
-    "webpack-dev-server": "3.1.8"
+    "@babel/core": "7.12.3",
+    "@babel/preset-env": "7.12.1",
+    "@babel/preset-react": "7.12.1",
+    "babel-loader": "8.1.0",
+    "css-loader": "5.0.0",
+    "html-webpack-plugin": "4.5.0",
+    "style-loader": "2.0.0",
+    "webpack": "5.3.2",
+    "webpack-cli": "4.1.0",
+    "webpack-dev-server": "3.11.0"
   }
 }
