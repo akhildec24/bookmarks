@@ -1,11 +1,12 @@
-// Timeline note: upgraded to React 17 and Webpack 5, October 2020.
-// New JSX transform enabled. Added import/export JSON feature.
+// Timeline note: clean architecture refactor, mid 2021.
+// Services and utilities extracted. Duplicate URL warning added.
 
 var React = require('react');
 var useState = React.useState;
 var useRef = React.useRef;
 var ReactDOM = require('react-dom');
 var useBookmarks = require('./hooks/useBookmarks');
+var filters = require('./utils/filters');
 var BookmarkForm = require('./components/BookmarkForm');
 var BookmarkList = require('./components/BookmarkList');
 var CategoryFilter = require('./components/CategoryFilter');
@@ -25,39 +26,12 @@ function App() {
   var setSelectedCategory = _category[1];
   var fileInputRef = useRef(null);
 
-  function getCategories() {
-    var cats = {};
-    bm.bookmarks.forEach(function(b) {
-      if (b.category) {
-        cats[b.category] = true;
-      }
-    });
-    return Object.keys(cats).sort();
-  }
-
-  function getFilteredBookmarks() {
-    var bookmarks = bm.bookmarks;
-    var term = searchTerm.toLowerCase();
-
-    if (selectedCategory !== 'All') {
-      bookmarks = bookmarks.filter(function(b) {
-        return b.category === selectedCategory;
-      });
-    }
-
-    if (term) {
-      bookmarks = bookmarks.filter(function(b) {
-        var title = (b.title || '').toLowerCase();
-        var url = (b.url || '').toLowerCase();
-        var note = (b.note || '').toLowerCase();
-        return title.indexOf(term) !== -1 ||
-               url.indexOf(term) !== -1 ||
-               note.indexOf(term) !== -1;
-      });
-    }
-
-    return bm.getSorted(bookmarks);
-  }
+  var categories = filters.getCategories(bm.bookmarks);
+  var categoryCounts = filters.getCategoryCounts(bm.bookmarks);
+  var filtered = filters.sortBookmarks(
+    filters.filterBookmarks(bm.bookmarks, searchTerm, selectedCategory),
+    bm.sortOrder
+  );
 
   function handleExport() {
     var json = JSON.stringify(bm.bookmarks, null, 2);
@@ -94,9 +68,6 @@ function App() {
     e.target.value = '';
   }
 
-  var categories = getCategories();
-  var filtered = getFilteredBookmarks();
-
   return React.createElement(ErrorBoundary, null,
     React.createElement('div', { className: 'app' },
       React.createElement('header', { className: 'app-header' },
@@ -117,7 +88,8 @@ function App() {
         React.createElement('div', { className: 'sidebar' },
           React.createElement(BookmarkForm, {
             onAdd: bm.addBookmark,
-            categories: categories
+            categories: categories,
+            isDuplicate: bm.isDuplicate
           })
         ),
         React.createElement('div', { className: 'main-content' },
@@ -128,6 +100,7 @@ function App() {
             }),
             React.createElement(CategoryFilter, {
               categories: categories,
+              categoryCounts: categoryCounts,
               selected: selectedCategory,
               onChange: setSelectedCategory
             }),

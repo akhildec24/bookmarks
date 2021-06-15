@@ -15,6 +15,8 @@ function BookmarkForm(props) {
   var note = _note[0];
   var setNote = _note[1];
 
+  var showDuplicateWarning = url.trim() && props.isDuplicate && props.isDuplicate(url.trim());
+
   function handleSubmit(e) {
     e.preventDefault();
     var t = title.trim();
@@ -59,7 +61,8 @@ function BookmarkForm(props) {
         value: url,
         onChange: function(e) { setUrl(e.target.value); },
         placeholder: 'https://example.com'
-      })
+      }),
+      showDuplicateWarning ? React.createElement('span', { className: 'duplicate-warning' }, 'This URL already exists') : null
     ),
     React.createElement('div', { className: 'form-group' },
       React.createElement('label', null, 'Category'),
