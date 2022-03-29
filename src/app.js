@@ -1,10 +1,11 @@
-// Timeline note: clean architecture refactor, mid 2021.
-// Services and utilities extracted. Duplicate URL warning added.
+// Timeline note: upgraded to React 18 with createRoot API, March 2022.
+// Uses startTransition for non-urgent search updates.
 
 var React = require('react');
 var useState = React.useState;
 var useRef = React.useRef;
-var ReactDOM = require('react-dom');
+var startTransition = React.startTransition;
+var createRoot = require('react-dom/client').createRoot;
 var useBookmarks = require('./hooks/useBookmarks');
 var filters = require('./utils/filters');
 var BookmarkForm = require('./components/BookmarkForm');
@@ -21,6 +22,12 @@ function App() {
   var _search = useState('');
   var searchTerm = _search[0];
   var setSearchTerm = _search[1];
+
+  function handleSearchChange(term) {
+    startTransition(function() {
+      setSearchTerm(term);
+    });
+  }
   var _category = useState('All');
   var selectedCategory = _category[0];
   var setSelectedCategory = _category[1];
@@ -96,7 +103,7 @@ function App() {
           React.createElement('div', { className: 'toolbar' },
             React.createElement(SearchBox, {
               value: searchTerm,
-              onChange: setSearchTerm
+              onChange: handleSearchChange
             }),
             React.createElement(CategoryFilter, {
               categories: categories,
@@ -120,7 +127,5 @@ function App() {
   );
 }
 
-ReactDOM.render(
-  React.createElement(App),
-  document.getElementById('app')
-);
+var root = createRoot(document.getElementById('app'));
+root.render(React.createElement(App));

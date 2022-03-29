@@ -1,6 +1,6 @@
 {
   "name": "bookmark-box",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "A simple local bookmarks manager",
   "main": "src/app.js",
   "scripts": {
@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "prop-types": "15.7.2",
-    "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react": "18.0.0",
+    "react-dom": "18.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.12.3",
